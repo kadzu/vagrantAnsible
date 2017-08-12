@@ -1,0 +1,61 @@
+- hosts: lb
+  become: yes
+  become_method: sudo
+
+  vars:
+    haproxy_app_name: mytest
+    haproxy_mode: http
+    haproxy_enable_stats: enable 
+    haproxy_algorithm: roundrobin
+    haproxy_backend_servers:
+      - {name: test2, ip: 192.168.30.3, port: 8000, paramstring: cookie A check}
+      - {name: test3, ip: 192.168.30.4, port: 8000, paramstring: cookie A check}
+    haproxy_stats_users:
+      - {username: test, password: test}
+  
+  tasks:
+    - name: upgrade haproxy package
+      yum: name=haproxy state=latest
+
+    - name: Install haproxy
+      yum: name=haproxy state=present
+
+    - name: Install libselinux-python
+      yum: name=libselinux-python state=present
+
+    - name: Update HAProxy config
+      template: src=templates/haproxy.cfg 
+            dest=/etc/haproxy/haproxy.cfg 
+      notify: 
+        - restart haproxy
+
+  handlers:
+    - name: restart haproxy
+      service: name=haproxy state=restarted
+
+
+- hosts: webservers
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+    - name: Install EPEL release for nginx
+      yum: name=epel-release state=present
+
+    - name: Install nginx web server
+      yum: name=nginx state=installed update_cache=true
+
+    - name: Starting nginx
+      service:
+        name: nginx
+        state: started
+
+    - name: Creates directory
+      file: path=/var/www/ state=directory
+
+    - name: Install libselinux-python
+      yum: name=libselinux-python state=present
+
+    - name: index.html copy
+      template: src=templates/local.html dest=/var/www/local.html mode=0644

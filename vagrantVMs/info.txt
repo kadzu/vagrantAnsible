@@ -1,0 +1,14 @@
+# first step: run vagrant up
+$ vagrant up
+
+# second step: add ssh
+eval "$(ssh-agent -s)"
+ssh-add .ssh/id_rsa_test
+
+# third step: test connection and key	
+ansible all -m ping -u vagrant -i ansible/hosts
+
+# fourth step: run playbook
+ansible-playbook ansible/playbook.yml -u vagrant -i ansible/hosts
+
+

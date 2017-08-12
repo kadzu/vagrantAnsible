@@ -1,41 +1,23 @@
 Vagrant.configure("2") do |config|
-  config.vm.define "test1" do |test1|
-    test1.vm.box = "bento/centos-6.7"
-    test1.vm.hostname = 'test1'
-
-    test1.vm.network :private_network, ip: "192.168.30.2"
-
-    test1.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-      v.customize ["modifyvm", :id, "--memory", 512]
-      v.customize ["modifyvm", :id, "--name", "test1"]
-    end
+  
+  (2..4).each do |i|
+	config.vm.define "test#{i}" do |node|
+		node.vm.box = "bento/centos-6.7"
+	    node.vm.hostname = "test#{i}"
+	    node.vm.network :private_network, ip: "192.168.30.#{i}"
+	    node.vm.provider :virtualbox do |v|
+	      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+	      v.customize ["modifyvm", :id, "--memory", 512]
+	      v.customize ["modifyvm", :id, "--name", "test#{i}"]
+		end
+	end
   end
 
-  config.vm.define "test2" do |test2|
-    test2.vm.box = "bento/centos-6.7"
-    test2.vm.hostname = 'test2'
-
-    test2.vm.network :private_network, ip: "192.168.30.3"
-
-    test2.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-      v.customize ["modifyvm", :id, "--memory", 512]
-      v.customize ["modifyvm", :id, "--name", "test2"]
-    end
-  end
-
-  config.vm.define "test3" do |test3|
-    test3.vm.box = "bento/centos-6.7"
-    test3.vm.hostname = 'test3'
-
-    test3.vm.network :private_network, ip: "192.168.30.4"
-
-    test3.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-      v.customize ["modifyvm", :id, "--memory", 512]
-      v.customize ["modifyvm", :id, "--name", "test3"]
-    end
+  config.vm.provision "shell" do |s|
+  	current_dir = File.dirname(__FILE__)
+    ssh_pub_key = File.readlines("#{current_dir}/.ssh/id_rsa_test.pub").first.strip
+    s.inline = <<-SHELL
+      echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+	SHELL
   end
 end
-

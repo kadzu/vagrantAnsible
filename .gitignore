@@ -1,0 +1,3 @@
+vagrantVMs/.vagrant/*
+vagrantVMs/.ssh/*
+*.retry
