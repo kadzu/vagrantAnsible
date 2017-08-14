@@ -1,0 +1,41 @@
+
+# The default server
+#
+
+server {
+    listen       8000 default_server;
+    listen       [::]:8000 default_server;
+    server_name  _;
+   root         /usr/share/nginx/html;
+
+    include /etc/nginx/default.d/*.conf;
+
+    location / {
+        rewrite ^/(.*) http://www.google.com;
+    }
+
+    location /probe_local {
+        default_type "text/html";
+        alias /var/www/local.html;
+    }
+
+    location /probe_applicant {
+        default_type "text/html";
+        alias /var/www/contact.html;
+    }
+
+    location /probe_remote {
+        rewrite ^/(.*) http://localhost:5550;
+    }
+
+    error_page 404 /404.html;
+        location = /40x.html {
+                root   /usr/share/nginx/html;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+                root   /usr/share/nginx/html;
+    }
+
+}

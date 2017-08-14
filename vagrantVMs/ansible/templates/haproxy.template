@@ -11,9 +11,9 @@ defaults
   option  dontlognull
   retries 3
   option redispatch
-  timeout connect  5000
-  timeout client  10000
-  timeout server  10000
+  timeout connect  3500
+  timeout client  9000
+  timeout server  90000
 
 listen {{haproxy_app_name}} 0.0.0.0:80
   mode {{haproxy_mode}}

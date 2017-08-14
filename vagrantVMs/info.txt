@@ -12,3 +12,10 @@ ansible all -m ping -u vagrant -i ansible/hosts
 ansible-playbook ansible/playbook.yml -u vagrant -i ansible/hosts
 
 
+# Testing
+
+
+# ejecutar una sola tarea.
+ansible-playbook playbook.yml -u root -i hosts  --start-at-task="Update HAProxy config"
+
+ansible-playbook ansible/playbook.yml -u vagrant -i ansible/hosts
